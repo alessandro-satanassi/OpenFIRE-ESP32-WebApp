@@ -1,0 +1,6 @@
+# Rubbish the operating systems leave behind. Everything else in this folder is the
+# published site and belongs in the repository.
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
