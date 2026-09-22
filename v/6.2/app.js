@@ -2218,8 +2218,8 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
 
     Lightgun page: the firmware serves one App page at a time and a new page takes the link over.
     A page retries only while it is visible, and stops retrying (state 'lost', detail.stopped)
-    after losing a docked session LOSS_LIMIT times within LOSS_WINDOW_MS: two open pages would
-    otherwise take the gun from each other forever. reconnect() starts again.
+    after losing a connection (including initial docking) LOSS_LIMIT times within LOSS_WINDOW_MS:
+    two open pages would otherwise take the gun from each other forever. reconnect() starts again.
 */
 (function (root) {
     'use strict';
@@ -2399,7 +2399,10 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
                     }
                 }
                 await this.protocol.disconnect().catch(() => {});
-                this._setState('error', { error: result.error, rebootSuggested: result.rebootSuggested });
+                if (kind === 'websocket' && this.autoStopped)
+                    this._setState('lost', { error: result.error, stopped: true });
+                else
+                    this._setState('error', { error: result.error, rebootSuggested: result.rebootSuggested });
                 return false;
             }
 
@@ -2416,12 +2419,12 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
         }
 
         _onClosed(reason, unexpected) {
-            if (this._busy) return; // reported by the connect flow
             const wasDocked = this.state === 'docked';
-            this.board = null;
-            this.config = null;
             let stopped = false;
-            if (unexpected && wasDocked && this.autoWebSocketUrl && !this._stopped) {
+            // Protocol emits 'closed' once for each unexpected transport loss.
+            // Count it even during docking; only the connect flow publishes that failure.
+            if (unexpected && (wasDocked || this._busy) && this.transportKind === 'websocket' &&
+                this.autoWebSocketUrl && !this._stopped) {
                 const now = Date.now();
                 this._losses = this._losses.filter((time) => now - time < LOSS_WINDOW_MS);
                 this._losses.push(now);
@@ -2431,6 +2434,9 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
                     clearTimeout(this._retryTimer);
                 }
             }
+            if (this._busy) return; // reported by the connect flow
+            this.board = null;
+            this.config = null;
             this._setState('lost', { reason, unexpected: !!unexpected, wasDocked, stopped });
             this._scheduleRetry(RECONNECT_DELAY_MS);
         }
@@ -5945,9 +5951,9 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             root.location.href = siteHome(here()) + langSuffix();
         },
 
-        /** Opened by the home page: take the port back without asking - the browser gives
-            a page the ports already allowed on this site - and say why we are here, once
-            the messages of the docking are over. */
+        /** Opened by the home page: take the port back if there is one matching candidate
+            among the ports already allowed on this site. Otherwise the user selects it
+            with Connect. Say why we are here once the messages of the docking are over. */
         async resume(app) {
             let jump = null;
             try {
@@ -5974,11 +5980,12 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             }
             if (!ports.length) return;
             const wanted = jump.port || {};
-            const port = ports.find((item) => {
+            const matches = ports.filter((item) => {
                 const info = OF.WebSerialTransport.describePort(item);
                 return info.productId === wanted.productId && info.vendorId === wanted.vendorId;
-            }) || (ports.length === 1 ? ports[0] : null);
-            if (port) await app.connectPort(port);
+            });
+            // VID/PID identify a USB type, not an individual lightgun: do not guess.
+            if (matches.length === 1) await app.connectPort(matches[0]);
         },
     };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
