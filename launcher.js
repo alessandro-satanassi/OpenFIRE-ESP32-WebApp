@@ -1941,6 +1941,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             showAll: 'See the published versions',
             open: 'Open this version',
             latest: 'latest',
+            hub: 'OpenFIRE ESP32: project home page',
             footer: 'OpenFIRE ESP32 - free software, GNU General Public License.'
         },
         it: {
@@ -1964,9 +1965,14 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             showAll: 'Vedi le versioni pubblicate',
             open: 'Apri questa versione',
             latest: 'ultima',
+            hub: 'OpenFIRE ESP32: pagina iniziale del progetto',
             footer: 'OpenFIRE ESP32 - software libero, licenza GNU General Public License.'
         }
     };
+
+    /* Il marchio in alto a sinistra riporta alla pagina iniziale del progetto,
+       portandosi dietro la lingua in uso, come fa quella pagina quando manda qui. */
+    const HUB_URL = 'https://alessandro-satanassi.github.io/OpenFIRE-ESP32/';
 
     let lang = 'en';
     const t = (key, ...args) => {
@@ -2256,6 +2262,14 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
         byId('connect-label').textContent = t('connect');
         byId('show-versions').textContent = t('showAll');
         byId('footer').textContent = t('footer');
+
+        const brand = byId('brand-link');
+        if (brand) {
+            brand.href = HUB_URL + suffix();
+            brand.title = t('hub');
+            brand.setAttribute('aria-label', t('hub'));
+        }
+
         buildControls();
         applyTheme();
         if (shownList) showVersions(shownList.list, shownList.lead);
