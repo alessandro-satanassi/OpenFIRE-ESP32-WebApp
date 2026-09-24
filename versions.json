@@ -9,11 +9,6 @@
       "type": "rc",
       "tag": "v7.0.0-rc1",
       "prerelease": true
-    },
-    {
-      "id": "6.2",
-      "label": "6.2.0",
-      "type": "stable"
     }
   ]
 }
