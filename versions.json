@@ -1,6 +1,15 @@
 {
-  "latest": "7.0.0-rc1",
+  "latest": "7.0.0-rc2",
   "versions": [
+    {
+      "id": "7.0.0-rc2",
+      "label": "7.0.0-rc2",
+      "numbers": "7.0.0",
+      "suffix": "rc2",
+      "type": "rc",
+      "tag": "v7.0.0-rc2",
+      "prerelease": true
+    },
     {
       "id": "7.0.0-rc1",
       "label": "7.0.0-rc1",
