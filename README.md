@@ -1,5 +1,29 @@
 # OpenFIRE ESP32 — Web App
 
+## English — Configuration in 7.0.0
+
+Open the **[WebApp](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebApp/?lang=en)** in Chrome or Edge on a computer. Start the lightgun normally, connect it by USB OTG or through its paired dongle, then authorize that serial port. The launcher opens the App matching the full firmware version. Save and wait for confirmation before disconnecting.
+
+For offline use, hold **B** at lightgun startup for about **2 seconds**. Join **OpenFIRE_Config**, accept the network without Internet, and open **http://openfire.local/** or **http://192.168.4.1/** in your normal browser, not the captive welcome window. Alternatively, use **http://192.168.7.1/** through the gun's USB NCM network on supported computers. In this USB mode the gun has no serial port; restart normally after saving to restore it.
+
+Firmware 7.0.0 supports DFRobot/Wii and PAJ7025R2/R3 in the same board image; select the installed camera and its pins before calibration. The WebApp configures the gun; firmware installation uses the separate [Web Flasher](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebFlasher/?lang=en).
+
+[User manual](https://github.com/alessandro-satanassi/OpenFIRE-Firmware-ESP32/blob/main/lightgun/src/README.md#english-version) · [Project hub](https://alessandro-satanassi.github.io/OpenFIRE-ESP32/?lang=en) · [Getting Started](https://github.com/alessandro-satanassi/OpenFIRE-Firmware-ESP32#getting-started) · [Common Problems](https://github.com/alessandro-satanassi/OpenFIRE-Firmware-ESP32/blob/main/lightgun/src/README.md#common-problems)
+
+## Italiano — Configurazione nella 7.0.0
+
+Apri la **[WebApp](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebApp/?lang=it)** con Chrome o Edge su computer. Avvia normalmente la lightgun, collegala tramite USB OTG o attraverso il dongle associato, poi autorizza quella porta seriale. Il launcher apre l'App corrispondente alla versione completa del firmware. Salva e attendi la conferma prima di disconnetterti.
+
+Per l'uso offline tieni premuto **B** all'avvio della lightgun per circa **2 secondi**. Collegati a **OpenFIRE_Config**, accetta la rete senza Internet e apri **http://openfire.local/** o **http://192.168.4.1/** nel browser normale, non nella finestra di benvenuto captive. In alternativa usa **http://192.168.7.1/** tramite la rete USB NCM della pistola sui computer supportati. In questa modalità USB la pistola non ha la porta seriale: riavvia normalmente dopo aver salvato per ripristinarla.
+
+Il firmware 7.0.0 supporta DFRobot/Wii e PAJ7025R2/R3 nella stessa immagine per scheda; seleziona la telecamera installata e i suoi pin prima della calibrazione. La WebApp configura la pistola; per installare il firmware usa il [Web Flasher](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebFlasher/?lang=it) separato.
+
+[Manuale utente](https://github.com/alessandro-satanassi/OpenFIRE-Firmware-ESP32/blob/main/lightgun/src/README.md#versione-italiana) · [Hub del progetto](https://alessandro-satanassi.github.io/OpenFIRE-ESP32/?lang=it) · [Primi passi](https://github.com/alessandro-satanassi/OpenFIRE-Firmware-ESP32#primi-passi) · [Problemi comuni](https://github.com/alessandro-satanassi/OpenFIRE-Firmware-ESP32/blob/main/lightgun/src/README.md#problemi-comuni-italiano)
+
+---
+
+## Publication reference (maintainers)
+
 The OpenFIRE Web App as it is published, nothing else: this repository is the site that
 GitHub Pages serves at
 
@@ -27,8 +51,8 @@ from the lightgun's.
 /                    the home page: the Connect button, and nothing else
 /launcher.js         what makes it work
 /versions.json       the versions published so far
-/v/6.2/              the app of firmware 6.2, exactly as it was published
-/v/6.1/              the app of firmware 6.1, untouched since its day
+/v/7.0.0/            the app of stable firmware 7.0.0
+/v/7.0.0-rc2/        a separately published prerelease, if retained
 /.nojekyll           GitHub Pages serves the files as they are, without Jekyll
 ```
 
@@ -40,7 +64,7 @@ is connected twice, but you click once.
 
 When the firmware's version is not published nothing is opened by itself: the versions that
 are there are offered, so a firmware nobody made an app for can still be tried with a
-neighbouring one. It should never happen, since an app is published with every firmware.
+neighbouring one. This may happen if publication was disabled or the matching version was removed; an adjacent version is not guaranteed to be compatible.
 
 **A published app never goes looking for another one.** It is the app of its version and it
 stays there. If the lightgun runs a firmware of another version it says so and asks whether
@@ -49,15 +73,12 @@ to carry on or to go back to the home page, which opens the right one.
 `versions.json` is the whole list:
 
 ```json
-{ "latest": "6.2",
-  "versions": [ { "id": "6.2", "label": "6.2.0", "type": "stable" },
-                { "id": "6.1", "label": "6.1.0", "type": "stable" } ] }
+{ "latest": "7.0.0",
+  "versions": [ { "id": "7.0.0", "label": "7.0.0", "numbers": "7.0.0", "suffix": "",
+                  "type": "stable", "tag": "v7.0.0", "prerelease": false } ] }
 ```
 
-The `id` is the number the firmware itself sends when the app connects (`OPENFIRE_VERSION`
-in `src/OpenFIREversion.h`, so `6.2`), and it names the folder. `label` and `type` are
-display metadata. The release tag is independent: until the version scheme changes,
-releases sharing the ID `6.2` update the same `v/6.2/` folder, not separate patch archives.
+The `id` is the full firmware version from `src/OpenFIREversion.h`: MAJOR.MINOR.PATCH plus the optional suffix, for example `7.0.0` or `7.0.0-rc2`. It names the folder and is sent in the firmware's full-version marker. The release tag is `v` plus that exact ID. The legacy numeric `OPENFIRE_VERSION` field (for example `7.0`) does not name the current publication folder. The catalog above is an example; the actual published list is `versions.json`.
 
 ## Publishing a version
 
@@ -78,7 +99,7 @@ then, in this repository:
 
 The firmware release workflow performs this publication when `update_webapp` is enabled
 and its release conditions are met. Repeating the same ID replaces that version, without
-duplicating its catalog entry. Raising `OPENFIRE_VERSION` to a different ID leaves every
+duplicating its catalog entry. Changing the full firmware version to a different ID leaves every
 previous version folder exactly as it was.
 
 ## Settings of this repository
