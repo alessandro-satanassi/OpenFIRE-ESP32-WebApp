@@ -2,7 +2,7 @@
 
 ## English — Configuration in 7.0.0
 
-Open the **[WebApp](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebApp/?lang=en)** in Chrome or Edge on a computer. Start the lightgun normally, connect it by USB OTG or through its paired dongle, then authorize that serial port. The launcher opens the App matching the full firmware version. Save and wait for confirmation before disconnecting.
+Open the **[WebApp](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebApp/?lang=en)** in Chrome or Edge on a computer. Start the lightgun normally, connect it by USB OTG or through its paired dongle, then authorize that serial port. The page opens the WebApp made for the firmware version installed in the gun. Save and wait for confirmation before disconnecting.
 
 For offline use, hold **B** at lightgun startup for about **2 seconds**. Join **OpenFIRE_Config**, accept the network without Internet, and open **http://openfire.local/** or **http://192.168.4.1/** in your normal browser, not the captive welcome window. Alternatively, use **http://192.168.7.1/** through the gun's USB NCM network on supported computers. In this USB mode the gun has no serial port; restart normally after saving to restore it.
 
@@ -12,7 +12,7 @@ Firmware 7.0.0 supports DFRobot/Wii and PAJ7025R2/R3 in the same board image; se
 
 ## Italiano — Configurazione nella 7.0.0
 
-Apri la **[WebApp](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebApp/?lang=it)** con Chrome o Edge su computer. Avvia normalmente la lightgun, collegala tramite USB OTG o attraverso il dongle associato, poi autorizza quella porta seriale. Il launcher apre l'App corrispondente alla versione completa del firmware. Salva e attendi la conferma prima di disconnetterti.
+Apri la **[WebApp](https://alessandro-satanassi.github.io/OpenFIRE-ESP32-WebApp/?lang=it)** con Chrome o Edge su computer. Avvia normalmente la lightgun, collegala tramite USB OTG o attraverso il dongle associato, poi autorizza quella porta seriale. La pagina apre la WebApp fatta per la versione del firmware installata nella pistola. Salva e attendi la conferma prima di disconnetterti.
 
 Per l'uso offline tieni premuto **B** all'avvio della lightgun per circa **2 secondi**. Collegati a **OpenFIRE_Config**, accetta la rete senza Internet e apri **http://openfire.local/** o **http://192.168.4.1/** nel browser normale, non nella finestra di benvenuto captive. In alternativa usa **http://192.168.7.1/** tramite la rete USB NCM della pistola sui computer supportati. In questa modalità USB la pistola non ha la porta seriale: riavvia normalmente dopo aver salvato per ripristinarla.
 
