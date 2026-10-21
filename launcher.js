@@ -1946,6 +1946,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             showAll: 'See the published versions',
             open: 'Open this version',
             latest: 'latest',
+            type_stable: 'stable', type_beta: 'beta',
             hub: 'OpenFIRE ESP32: project home page',
             footer: 'OpenFIRE ESP32 - free software, GNU General Public License.'
         },
@@ -1975,6 +1976,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             showAll: 'Vedi le versioni pubblicate',
             open: 'Apri questa versione',
             latest: 'ultima',
+            type_stable: 'stabile', type_beta: 'beta',
             hub: 'OpenFIRE ESP32: pagina iniziale del progetto',
             footer: 'OpenFIRE ESP32 - software libero, licenza GNU General Public License.'
         }
@@ -2138,6 +2140,13 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
         node.appendChild(root.document.createTextNode(extra.after || ''));
     }
 
+    /** Says a line and remembers it, so that a language change says it again. */
+    let lastLine = null;
+    function tell(line) {
+        lastLine = line;
+        line();
+    }
+
     /** La frase sulla serie 6.x, con il rimando alla pagina degli strumenti. */
     const sixSeries = () => ({
         before: t('sixBefore'), link: t('toolsLink'),
@@ -2178,7 +2187,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
             // quando l'etichetta non ha un suffisso, cioe' "7.0.0 stable".
             const label = String(entry.label || entry.id);
             top.appendChild(element('h2', null,
-                label + (entry.type && label.indexOf('-') < 0 ? ' ' + entry.type : '')));
+                label + (entry.type && label.indexOf('-') < 0 ? ' ' + (t('type_' + entry.type) || entry.type) : '')));
             if (String(list.latest || '') === String(entry.id))
                 top.appendChild(element('span', 'tag', t('latest')));
             link.appendChild(top);
@@ -2244,7 +2253,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
     async function connect() {
         const button = byId('connect');
         if (!OF.WebSerialTransport.isSupported()) {
-            say(t('noBrowser'), true);
+            tell(() => say(t('noBrowser'), true));
             const list = await published();
             if (list) showVersions(list);
             return;
@@ -2259,25 +2268,25 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
         if (!port) return;                       // the chooser was closed: nothing to say
 
         button.disabled = true;
-        say(t('reading'));
+        tell(() => say(t('reading')));
         try {
             const answer = await readVersion(port);
             if (answer.error) {
                 // Chi ha ancora la serie 6.x arriva qui: la lightgun c'e' e il cavo pure,
                 // ma parla un protocollo che questa pagina non sa leggere.
-                say(t(answer.error), true, answer.error === 'noAnswer' ? sixSeries() : null);
+                tell(() => say(t(answer.error), true, answer.error === 'noAnswer' ? sixSeries() : null));
                 return;
             }
             const board = answer.board;
             const list = await published();
             if (!list) {
-                say(t('noList'), true);
+                tell(() => say(t('noList'), true));
                 return;
             }
             const entry = entryFor(list, board);
             const label = String((board.versionFull || '').trim() || board.version);
             if (!entry) {
-                say(t('notPublished', label), true);
+                tell(() => say(t('notPublished', label), true));
                 showVersions(list, t('pickOne'));
                 return;
             }
@@ -2289,7 +2298,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
                 latestLabel: String((list.versions.find((item) => String(item.id) === String(list.latest)) || {}).label || list.latest || ''),
                 port: OF.WebSerialTransport.describePort(port)
             }));
-            say(t('opening', label));
+            tell(() => say(t('opening', label)));
             root.location.href = 'v/' + encodeURIComponent(entry.id) + '/' + suffix();
         } finally {
             button.disabled = false;
@@ -2322,6 +2331,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
         buildControls();
         applyTheme();
         if (shownList) showVersions(shownList.list, shownList.lead);
+        if (lastLine) lastLine();
 
         // The address says which language is shown: it can be copied and passed on.
         try {
@@ -2341,7 +2351,7 @@ const OpenFIREshared = {"boardInputs_e":{"unavailable":-2,"btnUnmapped":-1,"btnT
         byId('show-versions').addEventListener('click', async () => {
             const list = await published();
             if (list) showVersions(list);
-            else say(t('noList'), true);
+            else tell(() => say(t('noList'), true));
         });
         // A click anywhere, or Escape, closes the theme menu.
         root.document.addEventListener('click', () => {
