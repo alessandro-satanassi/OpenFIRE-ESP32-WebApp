@@ -1,6 +1,15 @@
 {
-  "latest": "7.1.0",
+  "latest": "7.1.1",
   "versions": [
+    {
+      "id": "7.1.1",
+      "label": "7.1.1",
+      "numbers": "7.1.1",
+      "suffix": "",
+      "type": "stable",
+      "tag": "v7.1.1",
+      "prerelease": false
+    },
     {
       "id": "7.1.0",
       "label": "7.1.0",
